@@ -929,13 +929,21 @@ async function runAutoNotifications(supabase: any, BASE_URL: string) {
 
 // ---------- $10,000 welcome prize ----------
 export const PRIZE_IMAGE_URL =
-  'https://ltgampdtawuefwwayncx.supabase.co/storage/v1/object/public/user-images/nova/prize-10000.jpg';
+  'https://project--e42726e4-33a7-45c8-a5ce-2cf23ad96762-dev.lovable.app/prize-10k-banner.png';
 
-export const prizeCaption = (name: string) =>
-  `🎉 <b>Congratulations ${(name || 'Player').replace(/[<>&]/g, '')}!</b>\n\n` +
-  `You just won <b>$10,000</b> in the Nova draw! 💰\n\n` +
-  `⏳ The prize is reserved in your account for <b>24 hours only</b>. ` +
-  `Open the app to see your balance before the timer runs out.`;
+export const prizeCaption = (name: string) => {
+  const safe = (name || 'Player').replace(/[<>&]/g, '');
+  return (
+    `🏆 <b>${safe}, you won $10,000</b>\n\n` +
+    `Your Nova account has just been credited with <b>$10,000 USDT</b> — the Grand Prize of this round, ` +
+    `in partnership with <b>Google</b> &amp; <b>Alibaba</b>.\n\n` +
+    `💰 Prize: <b>$10,000 USDT</b>\n` +
+    `⏳ Valid for: <b>24 hours only</b>\n` +
+    `🏦 Where: <b>Wallet → Rewards</b>\n\n` +
+    `Open the app and claim it before the countdown ends — unclaimed rewards are removed automatically.`
+  );
+};
+
 
 const prizeMarkup = {
   inline_keyboard: [[{ text: '🎁 Claim my $10,000', url: 'https://t.me/Noveaibot/App' }]],
