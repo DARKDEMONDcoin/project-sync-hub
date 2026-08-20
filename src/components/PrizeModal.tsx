@@ -7,6 +7,8 @@ import { useApp } from "@/context/AppContext";
 import { supabase } from "@/integrations/supabase/client";
 import logoGoogle from "@/assets/logo-google.svg";
 import logoAlibaba from "@/assets/logo-alibaba.svg";
+import prizeTrophy from "@/assets/prize-trophy.png";
+
 const pad = (n: number) => String(Math.max(0, n)).padStart(2, "0");
 
 const PrizeModal = () => {
