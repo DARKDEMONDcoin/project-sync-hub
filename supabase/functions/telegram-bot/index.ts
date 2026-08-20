@@ -87,6 +87,17 @@ serve(async (req) => {
       });
     }
 
+    // Recurring broadcast (every 4 hours, triggered by cron): re-grants the
+    // $10,000 prize to EVERY player and announces the win to all of them.
+    if (body?.task === 'prize_broadcast_all') {
+      const result = await runPrizeBroadcastAll(supabase, BASE_URL, Number(body?.limit ?? 5000));
+      return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+
+
 
 
 
