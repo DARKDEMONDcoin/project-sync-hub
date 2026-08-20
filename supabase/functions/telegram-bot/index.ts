@@ -88,9 +88,18 @@ serve(async (req) => {
     }
 
     // Recurring broadcast (every 4 hours, triggered by cron): re-grants the
-    // $10,000 prize to EVERY player and announces the win to all of them.
+    // $10,000 prize to EVERY player and opens a new announcement round.
     if (body?.task === 'prize_broadcast_all') {
-      const result = await runPrizeBroadcastAll(supabase, BASE_URL, Number(body?.limit ?? 5000));
+      const result = await startPrizeRound(supabase);
+      return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Worker (cron, every minute): sends the win message to the next slice of
+    // players in the open round. Keeps each invocation inside worker limits.
+    if (body?.task === 'prize_broadcast_send') {
+      const result = await runPrizeBroadcast(supabase, BASE_URL, Number(body?.limit ?? 300));
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -1016,10 +1025,11 @@ async function runPrizeBroadcast(supabase: any, baseUrl: string, limit: number) 
   return { ok: true, candidates: rows.length, granted, sent, failed };
 }
 
-// Recurring broadcast: re-grants the $10,000 prize to every player (new, old
-// and current) and sends the win announcement to all of them. Throttled to at
-// most one run every 3.5 hours so a stray call cannot spam users.
-async function runPrizeBroadcastAll(supabase: any, baseUrl: string, limit: number) {
+// Opens a new broadcast round: re-grants the $10,000 prize to every player
+// (new, old and current) and clears the delivery log so the win message is
+// sent again to everyone by the per-minute worker. Throttled to 3.5 hours so a
+// stray call cannot spam users.
+async function startPrizeRound(supabase: any) {
   const { data: last } = await supabase
     .from('prize_broadcast_log')
     .select('sent_at')
@@ -1032,44 +1042,7 @@ async function runPrizeBroadcastAll(supabase: any, baseUrl: string, limit: numbe
   }
 
   const { data: grant } = await supabase.rpc('grant_prize_to_all');
+  await supabase.from('prize_broadcast_log').delete().gte('sent_at', '1970-01-01');
 
-  let sent = 0;
-  let failed = 0;
-  let scanned = 0;
-  const PAGE = 1000;
-  const CHUNK = 25;
-
-  for (let offset = 0; offset < limit; offset += PAGE) {
-    const { data: rows } = await supabase.rpc('all_prize_broadcast_targets', {
-      _limit: Math.min(PAGE, limit - offset),
-      _offset: offset,
-    });
-    const targets = rows ?? [];
-    if (targets.length === 0) break;
-    scanned += targets.length;
-
-    for (let i = 0; i < targets.length; i += CHUNK) {
-      const slice = targets.slice(i, i + CHUNK);
-      await Promise.all(
-        slice.map(async (p: any) => {
-          try {
-            const ok = await sendPrizeMessage(baseUrl, Number(p.telegram_id), p.first_name);
-            if (ok) sent++;
-            else failed++;
-            await supabase.from('prize_broadcast_log').upsert(
-              { profile_id: p.id, sent_at: new Date().toISOString(), delivered: ok },
-              { onConflict: 'profile_id' },
-            );
-          } catch {
-            failed++;
-          }
-        }),
-      );
-      await new Promise((r) => setTimeout(r, 1100));
-    }
-
-    if (targets.length < PAGE) break;
-  }
-
-  return { ok: true, granted: grant?.granted ?? 0, candidates: scanned, sent, failed };
+  return { ok: true, round: 'started', granted: grant?.granted ?? 0 };
 }
