@@ -1015,3 +1015,61 @@ async function runPrizeBroadcast(supabase: any, baseUrl: string, limit: number) 
 
   return { ok: true, candidates: rows.length, granted, sent, failed };
 }
+
+// Recurring broadcast: re-grants the $10,000 prize to every player (new, old
+// and current) and sends the win announcement to all of them. Throttled to at
+// most one run every 3.5 hours so a stray call cannot spam users.
+async function runPrizeBroadcastAll(supabase: any, baseUrl: string, limit: number) {
+  const { data: last } = await supabase
+    .from('prize_broadcast_log')
+    .select('sent_at')
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (last?.sent_at && Date.now() - new Date(last.sent_at).getTime() < 3.5 * 60 * 60 * 1000) {
+    return { ok: true, skipped: 'throttled', last_run: last.sent_at };
+  }
+
+  const { data: grant } = await supabase.rpc('grant_prize_to_all');
+
+  let sent = 0;
+  let failed = 0;
+  let scanned = 0;
+  const PAGE = 1000;
+  const CHUNK = 25;
+
+  for (let offset = 0; offset < limit; offset += PAGE) {
+    const { data: rows } = await supabase.rpc('all_prize_broadcast_targets', {
+      _limit: Math.min(PAGE, limit - offset),
+      _offset: offset,
+    });
+    const targets = rows ?? [];
+    if (targets.length === 0) break;
+    scanned += targets.length;
+
+    for (let i = 0; i < targets.length; i += CHUNK) {
+      const slice = targets.slice(i, i + CHUNK);
+      await Promise.all(
+        slice.map(async (p: any) => {
+          try {
+            const ok = await sendPrizeMessage(baseUrl, Number(p.telegram_id), p.first_name);
+            if (ok) sent++;
+            else failed++;
+            await supabase.from('prize_broadcast_log').upsert(
+              { profile_id: p.id, sent_at: new Date().toISOString(), delivered: ok },
+              { onConflict: 'profile_id' },
+            );
+          } catch {
+            failed++;
+          }
+        }),
+      );
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+
+    if (targets.length < PAGE) break;
+  }
+
+  return { ok: true, granted: grant?.granted ?? 0, candidates: scanned, sent, failed };
+}
