@@ -104,15 +104,7 @@ const PrizeModal = () => {
           />
 
           <div className="relative z-10">
-            <img
-              src={prizeTrophy}
-              alt="Golden trophy for the $10,000 grand prize"
-              width={1024}
-              height={1024}
-              loading="lazy"
-              className="mx-auto mb-2 h-[clamp(84px,26vw,124px)] w-auto drop-shadow-[0_18px_28px_rgba(16,46,38,0.22)] [@media(max-height:700px)]:h-[72px]"
-            />
-            <h2 className="text-[clamp(20px,5.5vw,26px)] font-display font-medium leading-none text-foreground">{displayName}</h2>
+            <h2 className="mt-1 text-[clamp(20px,5.5vw,26px)] font-display font-medium leading-none text-foreground">{displayName}</h2>
 
             <p className="mt-1.5 text-[clamp(11px,3vw,12px)] text-muted-foreground">
               You won the{" "}
