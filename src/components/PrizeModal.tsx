@@ -117,7 +117,7 @@ const PrizeModal = () => {
             <p className="mt-1.5 text-[clamp(11px,3vw,12px)] text-muted-foreground">
               You won the{" "}
               <span className="text-[clamp(14px,4vw,16px)] font-display font-medium text-gradient-primary">
-                Monthly Prize
+                Grand Prize
               </span>
             </p>
 
