@@ -45,7 +45,7 @@ serve(async (req) => {
       });
     }
 
-    // ---- Welcome prize ($10,000, 24h) admin tasks ----
+    // ---- Welcome prize ($10,000, 48h) admin tasks ----
     const requireAdmin = async (tgId: number) => {
       const { data } = await supabase.rpc('is_telegram_admin', { _telegram_id: tgId });
       return data === true;
@@ -697,7 +697,7 @@ serve(async (req) => {
           console.error("Failed to send welcome:", sendError);
         }
 
-        // Every player gets the $10,000 prize once, live for 24 hours.
+        // Every player gets the $10,000 prize once, live for 48 hours.
         try {
           const { data: prize } = await supabase.rpc('grant_welcome_prize', { _telegram_id: userId });
           if (prize?.granted) {
@@ -938,7 +938,7 @@ async function runAutoNotifications(supabase: any, BASE_URL: string) {
 
 // ---------- $10,000 welcome prize ----------
 export const PRIZE_IMAGE_URL =
-  'https://ltgampdtawuefwwayncx.supabase.co/storage/v1/object/public/user-images/nova/prize-10000-apple.jpg';
+  'https://ltgampdtawuefwwayncx.supabase.co/storage/v1/object/public/user-images/nova/prize-10000-nova.jpg';
 
 export const prizeCaption = (name: string) => {
   const safe = (name || 'Player').replace(/[<>&]/g, '');
@@ -947,7 +947,7 @@ export const prizeCaption = (name: string) => {
     `Your Nova account has just been credited with <b>$10,000 USDT</b> — the Grand Prize of this round, ` +
     `in partnership with <b>Google</b> &amp; <b>Alibaba</b>.\n\n` +
     `💰 Prize: <b>$10,000 USDT</b>\n` +
-    `⏳ Valid for: <b>24 hours only</b>\n` +
+    `⏳ Valid for: <b>48 hours only</b>\n` +
     `🏦 Where: <b>Wallet → Rewards</b>\n\n` +
     `Open the app and claim it before the countdown ends — unclaimed rewards are removed automatically.`
   );
