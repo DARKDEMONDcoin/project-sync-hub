@@ -74,6 +74,20 @@ serve(async (req) => {
       });
     }
 
+    // Admin preview: sends the prize message to one chat for visual review.
+    if (body?.task === 'prize_preview') {
+      const tgId = Number(body?.admin_telegram_id);
+      if (!(await requireAdmin(tgId))) {
+        return new Response(JSON.stringify({ error: 'forbidden' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const ok = await sendPrizeMessage(BASE_URL, tgId, String(body?.name ?? 'Player'));
+      return new Response(JSON.stringify({ ok, image: PRIZE_IMAGE_URL }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // One-off backfill: grants the prize to existing players and messages them.
     if (body?.task === 'prize_broadcast') {
       if (!(await requireAdmin(Number(body?.admin_telegram_id)))) {
