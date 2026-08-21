@@ -79,18 +79,18 @@ const PrizeModal = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative max-h-[calc(100dvh-1rem)] w-full overflow-y-auto overflow-x-hidden rounded-[36px] bg-[hsl(0_0%_100%/0.72)] px-5 pb-5 pt-7 text-center backdrop-blur-[36px] saturate-[180%] [-ms-overflow-style:none] [scrollbar-width:none] sm:max-h-[calc(100dvh-2rem)] sm:px-6 sm:pb-6 sm:pt-8 [@media(max-height:700px)]:pb-4 [@media(max-height:700px)]:pt-5"
+          className="relative max-h-[calc(100dvh-1rem)] w-full overflow-y-auto overflow-x-hidden rounded-[36px] bg-[hsl(var(--card)/0.92)] px-5 pb-5 pt-7 text-center backdrop-blur-[36px] saturate-[180%] [-ms-overflow-style:none] [scrollbar-width:none] sm:max-h-[calc(100dvh-2rem)] sm:px-6 sm:pb-6 sm:pt-8 [@media(max-height:700px)]:pb-4 [@media(max-height:700px)]:pt-5"
           style={{
-            border: "1px solid hsl(160 18% 90%)",
+            border: "1px solid hsl(0 0% 100% / 0.14)",
             boxShadow:
-              "0 -24px 60px -22px rgba(16,46,38,0.22), inset 0 1px 0 hsl(0 0% 100% / 0.9)",
+              "0 -30px 70px -24px rgba(0,0,0,0.65), inset 0 1px 0 hsl(0 0% 100% / 0.12)",
           }}
         >
           <div
             className="pointer-events-none absolute inset-0 -z-10"
             style={{
               background:
-                "linear-gradient(160deg, hsl(var(--primary) / 0.28) 0%, hsl(0 0% 100% / 0.72) 45%, hsl(var(--accent) / 0.3) 100%)",
+                "radial-gradient(120% 80% at 15% 0%, hsl(var(--primary) / 0.28) 0%, transparent 55%), radial-gradient(110% 80% at 95% 10%, hsl(var(--accent) / 0.22) 0%, transparent 55%), hsl(var(--background))",
             }}
           />
 
@@ -99,7 +99,7 @@ const PrizeModal = () => {
             className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-50"
             style={{
               background:
-                "linear-gradient(180deg, hsl(var(--accent) / 0.16) 0%, hsl(var(--primary) / 0.08) 45%, transparent 100%)",
+                "linear-gradient(180deg, hsl(var(--primary) / 0.22) 0%, hsl(var(--accent) / 0.10) 45%, transparent 100%)",
             }}
           />
 
@@ -134,14 +134,14 @@ const PrizeModal = () => {
               </div>
             </div>
 
-            <div className="mt-4 rounded-[22px] border border-border bg-[hsl(0_0%_100%/0.66)] px-4 py-4 backdrop-blur-md sm:px-5 sm:py-5 [@media(max-height:700px)]:py-3">
+            <div className="mt-4 rounded-[22px] border border-border bg-[hsl(0_0%_100%/0.06)] px-4 py-4 backdrop-blur-md sm:px-5 sm:py-5 [@media(max-height:700px)]:py-3">
               <p className="text-[clamp(32px,10vw,44px)] font-display font-medium leading-none tracking-tight text-gradient-primary [@media(max-height:700px)]:text-[30px]">
                 ${reward.toLocaleString("en-US")}
               </p>
               <p className="mt-1.5 text-[clamp(9px,2.6vw,11px)] tracking-[0.18em] uppercase text-muted-foreground">USDT credited</p>
             </div>
 
-            <div className="mt-2.5 rounded-[22px] border border-border bg-[hsl(0_0%_100%/0.66)] px-3 py-3 backdrop-blur-md sm:mt-3 sm:px-5 sm:py-4 [@media(max-height:700px)]:py-2.5">
+            <div className="mt-2.5 rounded-[22px] border border-border bg-[hsl(0_0%_100%/0.06)] px-3 py-3 backdrop-blur-md sm:mt-3 sm:px-5 sm:py-4 [@media(max-height:700px)]:py-2.5">
               <p className="text-[clamp(9px,2.4vw,10px)] uppercase tracking-[0.24em] text-muted-foreground">Expires in</p>
               <div className="mt-2 flex items-end justify-center gap-2 sm:gap-3">
                 {[
