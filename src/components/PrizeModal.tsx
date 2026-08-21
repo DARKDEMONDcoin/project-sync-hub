@@ -163,8 +163,9 @@ const PrizeModal = () => {
             </div>
 
             <p className="mt-3 text-[clamp(10px,2.8vw,11px)] leading-relaxed text-muted-foreground sm:mt-4 [@media(max-height:700px)]:mt-2">
-              Withdraw within 72 hours. After the countdown ends, the reward is removed from your account
+              Withdraw within 48 hours. After the countdown ends, the reward is removed from your account
               automatically.
+
             </p>
 
             <Button
