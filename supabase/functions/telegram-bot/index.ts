@@ -973,7 +973,20 @@ const prizeMarkup = {
 };
 
 async function sendPrizeMessage(baseUrl: string, chatId: number, name: string) {
-  const res = await fetch(`${baseUrl}/sendMessage`, {
+  const res = await fetch(`${baseUrl}/sendPhoto`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      photo: PRIZE_IMAGE_URL,
+      caption: prizeCaption(name),
+      parse_mode: 'HTML',
+      reply_markup: prizeMarkup,
+    }),
+  });
+  const json = await res.json().catch(() => ({ ok: false }));
+  if (json?.ok) return true;
+  const fallback = await fetch(`${baseUrl}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -983,8 +996,8 @@ async function sendPrizeMessage(baseUrl: string, chatId: number, name: string) {
       reply_markup: prizeMarkup,
     }),
   });
-  const json = await res.json().catch(() => ({ ok: false }));
-  return json?.ok === true;
+  const fj = await fallback.json().catch(() => ({ ok: false }));
+  return fj?.ok === true;
 }
 
 async function runPrizeBroadcast(supabase: any, baseUrl: string, limit: number) {
